@@ -1,11 +1,9 @@
 import { AddTodo } from './add-todo';
-import { ITodoRepository } from '../repositories/todo-repository';
+import { makeFakeTodoRepository } from '../../test/fakes/fake-todo-repository';
 
 describe('AddTodo service', () => {
   it('should create a new todo', async () => {
-    const fakeRepository: ITodoRepository = {
-      create: jest.fn(),
-    };
+    const fakeRepository = makeFakeTodoRepository();
 
     const addTodo = new AddTodo(fakeRepository);
 
