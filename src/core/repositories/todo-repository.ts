@@ -1,5 +1,5 @@
 import { Todo } from '../entities/todo';
 
-export interface TodoRepository {
+export interface ITodoRepository {
   create(todo: Todo): Promise<void>;
 }
