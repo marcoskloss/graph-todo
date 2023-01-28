@@ -51,4 +51,3 @@ export class Server {
     // TODO: close db connection
   }
 }
-

@@ -1,7 +1,7 @@
 import { ITodoRepository } from '../repositories/todo-repository';
 import { Service } from './service';
 
-interface Params { 
+interface Params {
   id: string;
 }
 
