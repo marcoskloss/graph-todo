@@ -1,5 +1,7 @@
 import fastify, { FastifyInstance } from 'fastify';
 import mercurius from 'mercurius';
+import schema from './schema';
+import resolvers from './resolvers';
 
 export class Server {
   private app: FastifyInstance;
@@ -17,19 +19,6 @@ export class Server {
 
   private async setupServer() {
     this.app = fastify({ logger: true });
-    const schema = `
-      type Query {
-        add(x: Int, y: Int): Int
-        hello(name: String): String!
-      }
-    `;
-
-    const resolvers = {
-      Query: {
-        add: async (_: unknown, { x, y }: { x: number; y: number }) => x + y,
-        hello: (_: unknown, { name }: { name: string }) => 'hello ' + name,
-      },
-    };
 
     this.app.register(mercurius, {
       schema,
