@@ -1,15 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import type { Todo } from '../../../models';
-import type { WithId } from '../../../types';
-import { Optional } from '../../../types';
+
+import { useNavigate, useParams } from 'react-router-dom';
+import useTodo from '../useTodo';
 import TodoForm, { TodoFormValues } from './form';
+import { Modal, useModal } from '../../../components/Modal';
 
-// TODO this component should be a modal
-
-type Params = {
-  todoId: string;
-};
+type Params = { todoId: string };
 
 const emptyFormState = { content: '', done: false };
 
@@ -18,26 +14,22 @@ const validator = ({ content }: { content: string }) =>
 
 function TodoDetails() {
   const params = useParams<Params>();
+  const navigate = useNavigate();
+  const modal = useModal(true);
+  const { getTodo, saveTodo } = useTodo();
+
   const [formInitialState, setFormInitialState] = useState(emptyFormState);
 
   const handleSubmit = async (
     isValid: boolean,
     data: TodoFormValues
   ): Promise<void> => {
-    console.log({ isValid, data });
+    if (isValid) saveTodo(data);
   };
 
-  const getTodo = (todoId?: string): Optional<WithId<Todo>> => {
-    if (!todoId) {
-      return Optional.empty() as Optional<WithId<Todo>>;
-    }
-    const todo: WithId<Todo> = {
-      id: todoId,
-      content: 'the quick brown fox jumps over the lazy dog',
-      createdAt: new Date(),
-      done: true,
-    };
-    return Optional.of(todo);
+  const onCloseModal = () => {
+    modal.close();
+    navigate('/');
   };
 
   useEffect(() => {
@@ -46,14 +38,17 @@ function TodoDetails() {
       const values = todo.unwrap();
       setFormInitialState({ content: values.content, done: values.done });
     }
-  }, [params.todoId]);
+  }, [params.todoId, getTodo]);
 
   return (
-    <TodoForm
-      handleSubmit={handleSubmit}
-      initialState={formInitialState}
-      validator={validator}
-    />
+    <Modal isOpen={modal.isOpen} onRequestClose={onCloseModal}>
+      <h2>{params.todoId ? 'Update' : 'Add'} todo</h2>
+      <TodoForm
+        handleSubmit={handleSubmit}
+        initialState={formInitialState}
+        validator={validator}
+      />
+    </Modal>
   );
 }
 

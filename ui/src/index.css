@@ -7,3 +7,23 @@
 button {
   cursor: pointer;
 }
+
+.fancy-modal-header {
+  margin-left: -20px;
+  margin-right: -20px;
+  margin-bottom: 16px;
+  padding-left: 20px;
+  background: #F2F2F2;
+  height: 35px;
+  display: flex;
+  align-items: center;
+}
+
+.fancy-modal-header button {
+  border: 2px solid #DF4744;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  background: #F75753;
+  position: relative;
+}
