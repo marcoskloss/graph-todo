@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-
 import { useNavigate, useParams } from 'react-router-dom';
-import useTodo from '../useTodo';
+
+import * as api from '../../../api';
 import TodoForm, { TodoFormValues } from './form';
 import { Modal, useModal } from '../../../components/Modal';
 
@@ -16,7 +16,6 @@ function TodoDetails() {
   const params = useParams<Params>();
   const navigate = useNavigate();
   const modal = useModal(true);
-  const { getTodo, saveTodo } = useTodo();
 
   const [formInitialState, setFormInitialState] = useState(emptyFormState);
 
@@ -24,7 +23,7 @@ function TodoDetails() {
     isValid: boolean,
     data: TodoFormValues
   ): Promise<void> => {
-    if (isValid) saveTodo(data);
+    if (isValid) api.saveTodo(data);
   };
 
   const onCloseModal = () => {
@@ -33,12 +32,12 @@ function TodoDetails() {
   };
 
   useEffect(() => {
-    const todo = getTodo(params.todoId);
+    const todo = api.getTodo(params.todoId);
     if (todo.isPresent()) {
       const values = todo.unwrap();
       setFormInitialState({ content: values.content, done: values.done });
     }
-  }, [params.todoId, getTodo]);
+  }, [params.todoId]);
 
   return (
     <Modal isOpen={modal.isOpen} onRequestClose={onCloseModal}>
