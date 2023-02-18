@@ -14,8 +14,16 @@ function useFormState<T>(
   const setValueOf = <V,>(prop: keyof T, value: V) =>
     setState((prevState) => ({ ...prevState, [prop]: value }));
 
-  const onChangeField = (field: keyof T) => (ev: ChangeEvent) =>
-    setValueOf(field, ev.target.value);
+  const onChangeField = (field: keyof T) => (ev: ChangeEvent) => {
+    // eslint-disable-next-line prefer-destructuring
+    let value: string | boolean = ev.target.value;
+
+    if (ev.target.type === 'checkbox') {
+      value = ev.target.checked;
+    }
+
+    setValueOf(field, value);
+  };
 
   useEffect(() => setState(initialState), [initialState]);
 
@@ -33,12 +41,13 @@ export type TodoFormValues = {
 };
 
 type Props = {
-  handleSubmit(isValidSubmission: boolean, data: TodoFormValues): Promise<void>;
+  handleSubmit(data: TodoFormValues): Promise<void>;
   validator(data: TodoFormValues): boolean;
   initialState: TodoFormValues;
 };
 
 function TodoForm({ handleSubmit, initialState, validator }: Props) {
+  const [error, setError] = useState('');
   const { isValid, valueOf, onChangeField } = useFormState(
     initialState,
     validator
@@ -46,21 +55,36 @@ function TodoForm({ handleSubmit, initialState, validator }: Props) {
 
   const onSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
+
+    if (!isValid) {
+      setError('content must not be empty');
+      return;
+    }
+
     const values: TodoFormValues = {
       content: valueOf('content'),
       done: valueOf('done'),
     };
-    handleSubmit(isValid, values);
+    setError('');
+    handleSubmit(values);
   };
 
   return (
     <form onSubmit={onSubmit}>
+      {!isValid && (
+        <span id="error-msg" style={{ color: 'deeppink' }}>
+          {error}
+        </span>
+      )}
       <div>
         <label htmlFor="content">
           Content
           <input
             type="text"
             id="content"
+            aria-errormessage="error-msg"
+            placeholder="Content"
+            aria-invalid={!isValid}
             onChange={onChangeField('content')}
             value={valueOf('content')}
           />
@@ -72,6 +96,7 @@ function TodoForm({ handleSubmit, initialState, validator }: Props) {
           <input
             type="checkbox"
             id="done"
+            placeholder="Done"
             onChange={onChangeField('done')}
             checked={valueOf('done')}
           />

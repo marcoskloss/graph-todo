@@ -10,7 +10,7 @@ type Params = { todoId: string };
 const emptyFormState = { content: '', done: false };
 
 const validator = ({ content }: { content: string }) =>
-  (content ?? '').trim().length > 0;
+  (content || '').trim().length > 0;
 
 function TodoDetails() {
   const params = useParams<Params>();
@@ -19,19 +19,19 @@ function TodoDetails() {
 
   const [formInitialState, setFormInitialState] = useState(emptyFormState);
 
-  const handleSubmit = async (
-    isValid: boolean,
-    data: TodoFormValues
-  ): Promise<void> => {
-    if (isValid) api.saveTodo(data);
-  };
-
   const onCloseModal = () => {
     modal.close();
     navigate('/');
   };
 
+  const handleSubmit = async (data: TodoFormValues): Promise<void> => {
+    api.saveTodo(data);
+    onCloseModal();
+  };
+
   useEffect(() => {
+    if (!params.todoId) return;
+
     const todo = api.getTodo(params.todoId);
     if (todo.isPresent()) {
       const values = todo.unwrap();

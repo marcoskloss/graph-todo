@@ -1,10 +1,7 @@
 import { Todo } from '../models';
 import { Optional, WithId } from '../types';
 
-export function getTodo(todoId?: string): Optional<WithId<Todo>> {
-  if (!todoId) {
-    return Optional.empty() as Optional<WithId<Todo>>;
-  }
+export function getTodo(todoId: string): Optional<WithId<Todo>> {
   const todo: WithId<Todo> = {
     id: todoId,
     content: 'the quick brown fox jumps over the lazy dog',
@@ -14,4 +11,5 @@ export function getTodo(todoId?: string): Optional<WithId<Todo>> {
   return Optional.of(todo);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
 export function saveTodo(data: any) {}
